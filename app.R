@@ -108,5 +108,3 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
-
-runGitHub( "FAA-Socially-Responsible-ETFs", "SunaynaRangarajan") 
