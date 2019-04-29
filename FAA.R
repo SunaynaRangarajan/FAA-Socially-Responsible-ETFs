@@ -9,6 +9,10 @@
 #Kipnis, I. (2014, November 25). QuantStrat TradeR. Retrieved from An Update on Flexible Asset Allocation: 
 #https://quantstrattrader.wordpress.com/2014/11/25/an-update-on-flexible-asset-allocation/
 
+packages <- c("PerformanceAnalytics", "quantmod","xts","scales")
+new.packages <- packages[!(packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)>0) {install.packages(new.packages)}
+
 library(PerformanceAnalytics)
 library(quantmod)
 library(xts)
