@@ -1,3 +1,7 @@
+packages <- c("shiny","shinythemes","data.table")
+new.packages <- packages[!(packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)>0) {install.packages(new.packages)}
+
 library(shiny)
 library(shinythemes)
 library(data.table)
