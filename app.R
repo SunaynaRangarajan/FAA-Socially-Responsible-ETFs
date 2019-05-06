@@ -29,28 +29,28 @@ ui <- fluidPage(
       
       # Input: Numeric input for number of ETFs selected ----
       numericInput(inputId = "bestN",
-                   label = "Best N ETFs:",
+                   label = "Best N ETFs:", 
                    value = 3),
       
       # Input: Numeric input for Momentum weight ----
       numericInput(inputId = "weightMom",
-                   label = "Momentum weight",
-                   value = 1),
+                   label = "Momentum weight", min = 0, max = 1,
+                   value = 0.25),
       
       # Input: Numeric input for Volatility weight ----
       numericInput(inputId = "weightVol",
-                   label = "Volatility weight",
-                   value = 0.5),
+                   label = "Volatility weight", min = 0, max = 1,
+                   value = 0.25),
       
       # Input: Numeric input for Correlation weight ----
       numericInput(inputId = "weightCor",
-                   label = "Correlation weight",
-                   value = 0.5),
+                   label = "Correlation weight", min = 0, max = 1,
+                   value = 0.25),
       
       # Input: Numeric input for ESG weight ----
       numericInput(inputId = "weightESG",
-                   label = "ESG score weight",
-                   value = 0.5),
+                   label = "ESG score weight", min = 0, max = 1,
+                   value = 0.25),
       
       #Input: Text input for benchmark ---
       textInput(inputId = "benchmark", label = "Benchmark", value = "SPY"),
