@@ -94,7 +94,7 @@ server <- function(input, output) {
     stats <-  data.frame(t(rbind(Return.annualized(strategy)*100,
                        StdDev.annualized(strategy)*100,
                        maxDrawdown(strategy),
-                       as.numeric(SharpeRatio.annualized(strategy), Rf=0.02/252, scale=252)))
+                       as.numeric(SharpeRatio.annualized(strategy, Rf=0.02/252, scale=252))))
     colnames(stats) = c("Annualized_return","Annualized_vol","Worst_drawdown","Annualized_sharpe_ratio")
     stats
     
