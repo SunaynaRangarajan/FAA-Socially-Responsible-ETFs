@@ -290,7 +290,7 @@ Cash_inv <- function(prices, monthsLookback = 1,
 benchmark <- function (stock_symbol) {
   benchmark_Data <- new.env()
   benchmark = getSymbols(toString(stock_symbol), src="yahoo", env=benchmark_Data, from="2017-02-15", to="2019-03-29")
-  benchmark = na.omit(na.locf(do.call(merge, eapply(benchmark_Data, Ad))))
+  benchmark = na.omit(na.locf(do.call(merge, eapply(benchmark_Data, Ad)[benchmark])))
   benchmark_return = Return.calculate(benchmark)
  return(benchmark_return)                                                                  
 }
