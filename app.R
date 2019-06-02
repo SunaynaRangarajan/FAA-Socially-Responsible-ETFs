@@ -52,6 +52,11 @@ ui <- fluidPage(
                    label = "ESG score weight", min = 0, max = 1,
                    value = 0.25),
       
+        # Input: Numeric input for Momentum Threshold ----
+      numericInput(inputId = "momentumThreshold",
+                   label = "Momentum Threshold %", min = -1, max = 1,
+                   value = -0.1),
+      
       #Input: Text input for benchmark ---
       textInput(inputId = "benchmark", label = "Benchmark", value = "SPY"),
       
@@ -79,7 +84,7 @@ server <- function(input, output) {
     
     charts.PerformanceSummary(cbind(FAA(adPrices, weightMom= input$weightMom, weightVol=input$weightVol, 
                                   weightCor=input$weightCor, weightesg=input$weightESG,
-    bestN = input$bestN, monthsLookback = input$monthsLookback), benchmark(input$benchmark)), color=c("forestgreen","orange"),
+    bestN = input$bestN, monthsLookback = input$monthsLookback, momentum_threshold = input$momentumThreshold), benchmark(input$benchmark)), color=c("forestgreen","orange"),
     main="Performance Summary")
     
 
