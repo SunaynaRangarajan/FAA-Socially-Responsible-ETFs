@@ -193,7 +193,7 @@ FAA <- function(prices, monthsLookback = 1,
     
     #compute weights
     longs <- totalRank %in% topNvals #invest in ranks length - bestN or higher (in R, rank 1 is lowest)
-    longs[momentum < -0.1] <- 0 #Momentum < -10% is removed at the end.
+    longs[momentum < momentum_threshold] <- 0 #Momentum < -10% is removed at the end.
     longs <- longs/sum(longs) #equal weight all candidates
     longs[longs > 1/bestN] <- 1/bestN #in the event that we have fewer than top N invested into, lower weights to 1/top N
     names(longs) <- names(totalRank) 
