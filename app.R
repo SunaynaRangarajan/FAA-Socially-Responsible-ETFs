@@ -54,7 +54,7 @@ ui <- fluidPage(
       
         # Input: Numeric input for Momentum Threshold ----
       numericInput(inputId = "momentumThreshold",
-                   label = "Momentum Threshold %", min = -1, max = 1,
+                   label = "Momentum Threshold %", min = -1, max = 0,
                    value = -0.1),
       
       #Input: Text input for benchmark ---
