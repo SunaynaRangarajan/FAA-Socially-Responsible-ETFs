@@ -94,7 +94,7 @@ FAA <- function(prices, monthsLookback = 1,
 
 Cash_inv <- function(prices, monthsLookback = 1,
                 weightMom = 1, weightVol = .5, weightCor = .5, weightesg = 0.5,
-                riskFreeName = "VGSH", bestN = 3, , momentum_threshold = -0.1) 
+                riskFreeName = "VGSH", bestN = 3, momentum_threshold = -0.1) 
 {
   
   returns <- Return.calculate(prices)
