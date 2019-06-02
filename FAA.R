@@ -91,140 +91,10 @@ FAA <- function(prices, monthsLookback = 1,
   return(strategyReturns)
 }
 
-FAA <- function(prices, monthsLookback = 1,
-                weightMom = 1, weightVol = .5, weightCor = .5, weightesg = 0.5,
-                riskFreeName = "VGSH", bestN = 3) 
-{
-  
-  returns <- Return.calculate(prices)
-  monthlyEps <- endpoints(prices, on = "months")
-  riskFreeCol <- grep(riskFreeName, colnames(prices))
-  tmp <- list()
-  dates <- list()
-  
-  for(i in 2:(length(monthlyEps) - monthsLookback)) {
-    #subset data
-    priceData <- prices[monthlyEps[i]:monthlyEps[i+monthsLookback],]
-    returnsData <- returns[monthlyEps[i]:monthlyEps[i+monthsLookback],]
-    
-    #perform computations
-    momentum <- data.frame(t(t(priceData[nrow(priceData),])/t(priceData[1,]) - 1))
-    momentum <- momentum[,!is.na(momentum)]
-    #momentum[is.na(momentum)] <- -1 #set any NA momentum to negative 1 to keep R from crashing
-    priceData <- priceData[,names(momentum)]
-    returnsData <- returnsData[,names(momentum)]
-    
-    momRank <- rank(momentum)
-    vols <- data.frame(StdDev(returnsData))
-    volRank <- rank(-vols)
-    cors <- cor(returnsData, use="complete.obs")
-    corRank <- rank(-rowSums(cors))
-    esg <- esg
-    esgRank <- rank(esg)
-    
-    totalRank <- rank(weightMom*momRank + weightVol*volRank + weightCor*corRank + weightesg*esgRank)
-    topNvals <- as.vector(totalRank[order(totalRank, decreasing = TRUE)][1:bestN]) 
-    
-    #compute weights
-    longs <- totalRank %in% topNvals #invest in ranks length - bestN or higher (in R, rank 1 is lowest)
-    longs[momentum < -0.1] <- 0 #Momentum < -10% is removed at the end.
-    longs <- longs/sum(longs) #equal weight all candidates
-    longs[longs > 1/bestN] <- 1/bestN #in the event that we have fewer than top N invested into, lower weights to 1/top N
-    names(longs) <- names(totalRank) 
-    
-    
-    #append removed names (those with momentum < -10%)
-    removedZeroes <- rep(0, ncol(returns)) #Check and edit this
-    names(removedZeroes) <- names(returns)[!names(returns) %in% names(longs)]
-    longs <- c(longs, removedZeroes)
-    
-    #reorder to be in the same column order as original returns/prices
-    longs <- data.frame(t(longs))
-    longs <- longs[, names(returns)]
-    
-    #append lists
-    tmp[[i]] <- longs
-    dates[[i]] <- index(returnsData)[nrow(returnsData)]
-  }
-  
-  weights <- do.call(rbind, tmp)
-  dates <- do.call(c, dates)
-  weights <- xts(weights, order.by=as.Date(dates)) 
-  weights[, riskFreeCol] <- weights[, riskFreeCol] + 1-rowSums(weights)
-  strategyReturns <- Return.rebalancing(R = returns, weights = weights, geometric = TRUE)
-  colnames(strategyReturns) <- paste(monthsLookback, weightMom, weightVol, weightCor, sep="_")
-  return(strategyReturns)
-}
-
-
-FAA <- function(prices, monthsLookback = 1,
-                weightMom = 1, weightVol = .5, weightCor = .5, weightesg = 0.5,
-                riskFreeName = "VGSH", bestN = 3) 
-{
-  
-  returns <- Return.calculate(prices)
-  monthlyEps <- endpoints(prices, on = "months")
-  riskFreeCol <- grep(riskFreeName, colnames(prices))
-  tmp <- list()
-  dates <- list()
-  
-  for(i in 2:(length(monthlyEps) - monthsLookback)) {
-    #subset data
-    priceData <- prices[monthlyEps[i]:monthlyEps[i+monthsLookback],]
-    returnsData <- returns[monthlyEps[i]:monthlyEps[i+monthsLookback],]
-    
-    #perform computations
-    momentum <- data.frame(t(t(priceData[nrow(priceData),])/t(priceData[1,]) - 1))
-    momentum <- momentum[,!is.na(momentum)]
-    #momentum[is.na(momentum)] <- -1 #set any NA momentum to negative 1 to keep R from crashing
-    priceData <- priceData[,names(momentum)]
-    returnsData <- returnsData[,names(momentum)]
-    
-    momRank <- rank(momentum)
-    vols <- data.frame(StdDev(returnsData))
-    volRank <- rank(-vols)
-    cors <- cor(returnsData, use="complete.obs")
-    corRank <- rank(-rowSums(cors))
-    esg <- esg
-    esgRank <- rank(esg)
-    
-    totalRank <- rank(weightMom*momRank + weightVol*volRank + weightCor*corRank + weightesg*esgRank)
-    topNvals <- as.vector(totalRank[order(totalRank, decreasing = TRUE)][1:bestN]) 
-    
-    #compute weights
-    longs <- totalRank %in% topNvals #invest in ranks length - bestN or higher (in R, rank 1 is lowest)
-    longs[momentum < momentum_threshold] <- 0 #Momentum < -10% is removed at the end.
-    longs <- longs/sum(longs) #equal weight all candidates
-    longs[longs > 1/bestN] <- 1/bestN #in the event that we have fewer than top N invested into, lower weights to 1/top N
-    names(longs) <- names(totalRank) 
-    
-    
-    #append removed names (those with momentum < -10%)
-    removedZeroes <- rep(0, ncol(returns)) #Check and edit this
-    names(removedZeroes) <- names(returns)[!names(returns) %in% names(longs)]
-    longs <- c(longs, removedZeroes)
-    
-    #reorder to be in the same column order as original returns/prices
-    longs <- data.frame(t(longs))
-    longs <- longs[, names(returns)]
-    
-    #append lists
-    tmp[[i]] <- longs
-    dates[[i]] <- index(returnsData)[nrow(returnsData)]
-  }
-  
-  weights <- do.call(rbind, tmp)
-  dates <- do.call(c, dates)
-  weights <- xts(weights, order.by=as.Date(dates)) 
-  weights[, riskFreeCol] <- weights[, riskFreeCol] + 1-rowSums(weights)
-  strategyReturns <- Return.rebalancing(R = returns, weights = weights, geometric = TRUE)
-  colnames(strategyReturns) <- paste(monthsLookback, weightMom, weightVol, weightCor, sep="_")
-  return(strategyReturns)
-}
 
 Cash_inv <- function(prices, monthsLookback = 1,
                 weightMom = 1, weightVol = .5, weightCor = .5, weightesg = 0.5,
-                riskFreeName = "VGSH", bestN = 3) 
+                riskFreeName = "VGSH", bestN = 3, , momentum_threshold = -0.1) 
 {
   
   returns <- Return.calculate(prices)
@@ -258,14 +128,14 @@ Cash_inv <- function(prices, monthsLookback = 1,
     
     #compute weights
     longs <- totalRank %in% topNvals #invest in ranks length - bestN or higher (in R, rank 1 is lowest)
-    longs[momentum < -0.1] <- 0 #Momentum < -10% is removed at the end.
+    longs[momentum < momentum_threshold] <- 0 #Momentum less than threshold is removed at the end.
     longs <- longs/sum(longs) #equal weight all candidates
     longs[longs > 1/bestN] <- 1/bestN #in the event that we have fewer than top N invested into, lower weights to 1/top N
     names(longs) <- names(totalRank) 
     
     
-    #append removed names (those with momentum < -10%)
-    removedZeroes <- rep(0, ncol(returns)) #Check and edit this
+    #append removed names (those with momentum less than threshold)
+    removedZeroes <- rep(0, ncol(returns)) 
     names(removedZeroes) <- names(returns)[!names(returns) %in% names(longs)]
     longs <- c(longs, removedZeroes)
     
